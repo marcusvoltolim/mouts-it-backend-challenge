@@ -1,0 +1,46 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "localstack-data:/var/lib/localstack"
+      - "./docker-compose/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+  sqs-admin-ui:
+    image: pacovk/sqs-admin
+    environment:
+      - SQS_AWS_REGION=us-east-1
+      - SQS_ENDPOINT_URL=http://localstack:4566
+    ports:
+      - "3999:3999"
+      - "3000:3000"
+    depends_on:
+      - localstack
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo-data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
+
+volumes:
+  localstack-data:
+  mongo-data:

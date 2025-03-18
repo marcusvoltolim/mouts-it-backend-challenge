@@ -1,3 +1,20 @@
 spring:
   application:
     name: mouts-it-challenge
+  cloud:
+    aws:
+      sqs:
+        endpoint: http://localhost:4566
+        region: us-east-1
+      credentials:
+        access-key: moutis
+        secret-key: moutis
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
