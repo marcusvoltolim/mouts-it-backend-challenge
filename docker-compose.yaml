@@ -1,4 +1,16 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app-data
+    depends_on:
+      - localstack
+      - mongodb
+
   localstack:
     image: localstack/localstack:latest
     ports:
@@ -9,6 +21,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "localstack-data:/var/lib/localstack"
       - "./docker-compose/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+
   sqs-admin-ui:
     image: pacovk/sqs-admin
     environment:
@@ -44,3 +57,8 @@ services:
 volumes:
   localstack-data:
   mongo-data:
+  app-data:
+
+networks:
+  bridge:
+    driver: bridge
